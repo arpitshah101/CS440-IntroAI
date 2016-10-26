@@ -4,6 +4,8 @@
     <meta charset="UTF-8">
     <title>8-Queens Simulator</title>
 
+    <script src="/node_modules/systemjs/dist/system.js"></script>
+
     <style>
         table {
             font-size: 3em;
@@ -30,7 +32,13 @@
         }
     </style>
     <script src="https://code.jquery.com/jquery-3.1.1.js" charset="utf-8"></script>
-    <script src="script.js"></script>
+    <script>
+        System.config({
+            defaultJSExtension: true
+        });
+        System.import('script.js');
+    </script>
+    <!--<script src="script.js"></script>-->
 </head>
 <body>
     <!-- Queen character: &#9819; -->
@@ -118,9 +126,9 @@
     </table>
 
     <div>Attacking Pairs Queens: <span id="atkCount"></span></div>
-    <select name="algorithm-option" id="algo-option">
+    <!--<select name="algorithm-option" id="algo-option">
         <option value="hill-climbing">Hill-Climbing</option>
-    </select>
+    </select>-->
     <button type="button" id="start-btn">Start!</button>
 </body>
 </html>

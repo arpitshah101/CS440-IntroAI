@@ -1,63 +1,64 @@
 /// <reference path="../typings/globals/jquery/index.d.ts" />
 
-class State {
+import { updateQueens, clearBoard } from './chessBoard.js';
+
+import { HillClimb, NeighborsFunction, ValueFunction } from '../core_algorithms/js/hillClimb/hillClimb.js';
+
+class BoardState {
     positions: number[] = [];
-    value: number;
     constructor(p: number[]) {
         this.positions = p;
-        this.value = getScore(this);
     }
 
-    public clone(): State {
+    clone(): BoardState {
         let p = this.positions.slice();
-        return new State(p);
+        return new BoardState(p);
+    }
+
+    equals(s: BoardState): boolean {
+        return this.positions.every((value: number, index: number) => s.positions[index] == value);
+    }
+
+    toString() {
+        return '[' + this.positions.toString() + ']';
     }
 }
 
-var currentAlgo: string = "hill-climbing";
-var currentState: State = generateRandomState();
-
-
-// TEST STATE. SHOULD HAVE COST FUNCTION OF 17
-// positions = [4, 5, 6, 3, 4, 5, 6, 5];
-
-// function getPositionInCol(col: number): number
-// {
-//     return positions[col];
-// }
-
-function getScore(state: State): number {
-    if (currentAlgo == "hill-climbing") {
-        return calculateAtkPairs(state);
-    }
-}
-
-function generateRandomState(): State {
+/**
+ * Generates random BoardState object with random positions in each column (1 per column)
+ */
+function generateRandomState(): BoardState {
     let p: number[] = [];
     for(let i = 0; i < 8; i++)
         p[i] = Math.floor(Math.random() * 8);
-    return new State(p);
+    return new BoardState(p);
 }
 
-function updateQueens(): void
-{
-    clearBoard();
-    currentState.positions.map((value: number, index: number) => {
-        jQuery('#row'+(value+1)+' .col'+(index+1)).html('&#9819;');
+/**
+ * Generates all possible neighbor states such that only one queen is moved any distance within the same column.
+ */
+function getAllNeighbors(state: BoardState): BoardState[] {
+    let neighbors: BoardState[] = [];
+
+    state.positions.forEach((value: number, index: number) => {
+        for (let i = 0; i < 8; i++) {
+            // check if value is already used to avoid duplicate states
+            if (i == value) continue;
+            // clone current state first
+            let tempState = state.clone();
+            // modify position of only 1 queen from current state
+            tempState.positions[index] = i;
+            neighbors.push(tempState);
+        }
     });
-    jQuery('#atkCount').html(currentState.value.toString());
+
+    return neighbors;
 }
 
-function clearBoard(): void {
-    for (let i = 1; i < 9; i++) {
-        jQuery('.col'+i).each((index: number, element: Element) => {
-            element.innerHTML = "";
-        });
-    }
-}
-
-function calculateAtkPairs(state: State): number
-{
+/**
+ * Calculates the number of pairs of queens are attacking each other given that there is only 1 queen per column
+ */
+function calculateAtkPairs(state: BoardState): number {
     let count = 0;
     state.positions.forEach((rowNum: number, colNum: number) => {
         for(let i = 0; i < colNum; i++) {
@@ -75,65 +76,31 @@ function calculateAtkPairs(state: State): number
     return count;
 }
 
-function calculateSafePairs(state: State): number
-{
+function countSafePairs(state: BoardState): number {
     return 28 - calculateAtkPairs(state);
 }
 
-function getAllNeighbors(state: State): State[]
-{
-    var neighbors: State[] = [];
-    state.positions.forEach((position: number, index: number) => {
-        let x = state.positions.slice();
-        x[index] = position + 1;
-        neighbors.push(new State(x));
-        let y = state.positions.slice();
-        y[index] = position - 1;
-        neighbors.push(new State(y));
-    });
-    return neighbors;
-}
+var currentState: BoardState = generateRandomState();
 
-function hillClimb(): void {
-    while (true) {
-        let neighbors: State[] = getAllNeighbors(currentState);
-        let maxNeighbor = getMaxNeighbor(neighbors);
-        if (maxNeighbor.value <= currentState.value) {
-            break;
-        }
-        currentState = maxNeighbor;
-        updateQueens();
-    };
-}
-
-function getMaxNeighbor(neighbors: State[]): State {
-    let maxScore = 0;
-    let maxIndex = 0;
-    neighbors.forEach((state: State, index: number) => {
-        if (maxScore < calculateAtkPairs(state)) {
-            maxIndex = index;
-            maxScore = calculateAtkPairs(state);
-        }
-    });
-    return neighbors[maxIndex];
-}
-
-// ------------------------------------------------------------
 jQuery(document).ready(() => {
     // Initialize chess board with randomly generated state
-    generateRandomState();
-    updateQueens();
 
-    jQuery("#start-btn").click(function() {
-        var algo: string = jQuery("#algo-option").val();
-        if (algo == 'hill-climbing') {
-            let maxIter = 1000;
-            do {
-                hillClimb();
-                currentState = generateRandomState();
-                maxIter--;
-            } while (maxIter > 0 && getScore(currentState) != 0);
-            console.log('RESULT: ' + currentState.positions);
-        }
-    });
+    currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
+    updateQueens(currentState.positions);
+    console.log('STARTING AT: ' + currentState.positions);
 });
+
+jQuery("#start-btn").click(function() {
+    let hc = new HillClimb(getAllNeighbors, countSafePairs, currentState);
+    while (!hc.isComplete) {
+        hc.step(1);
+        updateQueens((<BoardState> hc.currentState).positions);
+    }
+    console.log('RESULT: ' + hc.currentState.positions);
+});
+// TEST STATE. SHOULD HAVE COST FUNCTION OF 17
+// positions = [4, 5, 6, 3, 4, 5, 6, 5];
+
+function getScore(state: BoardState): number {
+    return calculateAtkPairs(state);
+}

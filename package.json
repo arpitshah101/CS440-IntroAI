@@ -1,27 +1,28 @@
 {
-    "name": "intro-ai",
-    "version": "1.0.0",
-    "description": "",
-    "main": "index.js",
-    "dependencies": {
-        "typings": "^1.4.0"
-    },
-    "devDependencies": {
-        "typescript": "^2.0.3",
-        "typings":"^1.4.0"
-    },
-    "scripts": {
-        "postinstall": "typings install",
-        "test": "echo \"Error: no test specified\" && exit 1"
-    },
-    "repository": {
-        "type": "git",
-        "url": "git+https://github.com/arpitshah101/CS440-IntroAI.git"
-    },
-    "author": "",
-    "license": "ISC",
-    "bugs": {
-        "url": "https://github.com/arpitshah101/CS440-IntroAI/issues"
-    },
-    "homepage": "https://github.com/arpitshah101/CS440-IntroAI#readme"
+  "name": "intro-ai",
+  "version": "1.0.0",
+  "description": "",
+  "main": "index.js",
+  "dependencies": {
+    "systemjs": "^0.19.39",
+    "typings": "^1.4.0"
+  },
+  "devDependencies": {
+    "typescript": "^2.0.3",
+    "typings": "^1.4.0"
+  },
+  "scripts": {
+    "postinstall": "typings install",
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/arpitshah101/CS440-IntroAI.git"
+  },
+  "author": "",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/arpitshah101/CS440-IntroAI/issues"
+  },
+  "homepage": "https://github.com/arpitshah101/CS440-IntroAI#readme"
 }

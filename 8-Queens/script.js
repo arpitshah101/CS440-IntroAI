@@ -1,111 +1,91 @@
-var State = (function () {
-    function State(p) {
-        this.positions = [];
-        this.positions = p;
-        this.value = getScore(this);
+System.register(['./chessBoard.js', '../core_algorithms/js/hillClimb/hillClimb.js'], function(exports_1, context_1) {
+    "use strict";
+    var __moduleName = context_1 && context_1.id;
+    var chessBoard_js_1, hillClimb_js_1;
+    var BoardState, currentState;
+    function generateRandomState() {
+        var p = [];
+        for (var i = 0; i < 8; i++)
+            p[i] = Math.floor(Math.random() * 8);
+        return new BoardState(p);
     }
-    State.prototype.clone = function () {
-        var p = this.positions.slice();
-        return new State(p);
-    };
-    return State;
-}());
-var currentAlgo = "hill-climbing";
-var currentState = generateRandomState();
-function getScore(state) {
-    if (currentAlgo == "hill-climbing") {
-        return calculateAtkPairs(state);
-    }
-}
-function generateRandomState() {
-    var p = [];
-    for (var i = 0; i < 8; i++)
-        p[i] = Math.floor(Math.random() * 8);
-    return new State(p);
-}
-function updateQueens() {
-    clearBoard();
-    currentState.positions.map(function (value, index) {
-        jQuery('#row' + (value + 1) + ' .col' + (index + 1)).html('&#9819;');
-    });
-    jQuery('#atkCount').html(currentState.value.toString());
-}
-function clearBoard() {
-    for (var i = 1; i < 9; i++) {
-        jQuery('.col' + i).each(function (index, element) {
-            element.innerHTML = "";
+    function getAllNeighbors(state) {
+        var neighbors = [];
+        state.positions.forEach(function (value, index) {
+            for (var i = 0; i < 8; i++) {
+                if (i == value)
+                    continue;
+                var tempState = state.clone();
+                tempState.positions[index] = i;
+                neighbors.push(tempState);
+            }
         });
+        return neighbors;
     }
-}
-function calculateAtkPairs(state) {
-    var count = 0;
-    state.positions.forEach(function (rowNum, colNum) {
-        for (var i = 0; i < colNum; i++) {
-            if (rowNum == state.positions[i])
-                count++;
-            else {
-                var diff = Math.abs(colNum - i);
-                if (diff > 0) {
-                    if (Math.abs(state.positions[i] - rowNum) == diff)
-                        count++;
+    function calculateAtkPairs(state) {
+        var count = 0;
+        state.positions.forEach(function (rowNum, colNum) {
+            for (var i = 0; i < colNum; i++) {
+                if (rowNum == state.positions[i])
+                    count++;
+                else {
+                    var diff = Math.abs(colNum - i);
+                    if (diff > 0) {
+                        if (Math.abs(state.positions[i] - rowNum) == diff)
+                            count++;
+                    }
                 }
             }
-        }
-    });
-    return count;
-}
-function calculateSafePairs(state) {
-    return 28 - calculateAtkPairs(state);
-}
-function getAllNeighbors(state) {
-    var neighbors = [];
-    state.positions.forEach(function (position, index) {
-        var x = state.positions.slice();
-        x[index] = position + 1;
-        neighbors.push(new State(x));
-        var y = state.positions.slice();
-        y[index] = position - 1;
-        neighbors.push(new State(y));
-    });
-    return neighbors;
-}
-function hillClimb() {
-    while (true) {
-        var neighbors = getAllNeighbors(currentState);
-        var maxNeighbor = getMaxNeighbor(neighbors);
-        if (maxNeighbor.value <= currentState.value) {
-            break;
-        }
-        currentState = maxNeighbor;
-        updateQueens();
+        });
+        return count;
     }
-    ;
-}
-function getMaxNeighbor(neighbors) {
-    var maxScore = 0;
-    var maxIndex = 0;
-    neighbors.forEach(function (state, index) {
-        if (maxScore < calculateAtkPairs(state)) {
-            maxIndex = index;
-            maxScore = calculateAtkPairs(state);
+    function countSafePairs(state) {
+        return 28 - calculateAtkPairs(state);
+    }
+    function getScore(state) {
+        return calculateAtkPairs(state);
+    }
+    return {
+        setters:[
+            function (chessBoard_js_1_1) {
+                chessBoard_js_1 = chessBoard_js_1_1;
+            },
+            function (hillClimb_js_1_1) {
+                hillClimb_js_1 = hillClimb_js_1_1;
+            }],
+        execute: function() {
+            BoardState = (function () {
+                function BoardState(p) {
+                    this.positions = [];
+                    this.positions = p;
+                }
+                BoardState.prototype.clone = function () {
+                    var p = this.positions.slice();
+                    return new BoardState(p);
+                };
+                BoardState.prototype.equals = function (s) {
+                    return this.positions.every(function (value, index) { return s.positions[index] == value; });
+                };
+                BoardState.prototype.toString = function () {
+                    return '[' + this.positions.toString() + ']';
+                };
+                return BoardState;
+            }());
+            currentState = generateRandomState();
+            jQuery(document).ready(function () {
+                currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
+                chessBoard_js_1.updateQueens(currentState.positions);
+                console.log('STARTING AT: ' + currentState.positions);
+            });
+            jQuery("#start-btn").click(function () {
+                var hc = new hillClimb_js_1.HillClimb(getAllNeighbors, countSafePairs, currentState);
+                while (!hc.isComplete) {
+                    hc.step(1);
+                    chessBoard_js_1.updateQueens(hc.currentState.positions);
+                }
+                console.log('RESULT: ' + hc.currentState.positions);
+            });
         }
-    });
-    return neighbors[maxIndex];
-}
-jQuery(document).ready(function () {
-    generateRandomState();
-    updateQueens();
-    jQuery("#start-btn").click(function () {
-        var algo = jQuery("#algo-option").val();
-        if (algo == 'hill-climbing') {
-            var maxIter = 1000;
-            do {
-                hillClimb();
-                currentState = generateRandomState();
-                maxIter--;
-            } while (maxIter > 0 && getScore(currentState) != 0);
-            console.log('RESULT: ' + currentState.positions);
-        }
-    });
+    }
 });
 //# sourceMappingURL=script.js.map
