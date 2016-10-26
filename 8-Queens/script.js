@@ -2,7 +2,7 @@ System.register(['./chessBoard.js', '../core_algorithms/js/hillClimb/hillClimb.j
     "use strict";
     var __moduleName = context_1 && context_1.id;
     var chessBoard_js_1, hillClimb_js_1;
-    var BoardState, currentState;
+    var BoardState, currentState, hc;
     function generateRandomState() {
         var p = [];
         for (var i = 0; i < 8; i++)
@@ -73,17 +73,20 @@ System.register(['./chessBoard.js', '../core_algorithms/js/hillClimb/hillClimb.j
             }());
             currentState = generateRandomState();
             jQuery(document).ready(function () {
-                currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
+                currentState = generateRandomState();
                 chessBoard_js_1.updateQueens(currentState.positions);
                 console.log('STARTING AT: ' + currentState.positions);
+                hc = new hillClimb_js_1.HillClimb(getAllNeighbors, countSafePairs, currentState);
             });
             jQuery("#start-btn").click(function () {
-                var hc = new hillClimb_js_1.HillClimb(getAllNeighbors, countSafePairs, currentState);
-                while (!hc.isComplete) {
+                if (!hc.isComplete) {
                     hc.step(1);
                     chessBoard_js_1.updateQueens(hc.currentState.positions);
+                    console.log('RESULT: ' + hc.currentState.positions);
                 }
-                console.log('RESULT: ' + hc.currentState.positions);
+                else {
+                    alert("Local maxima/minima found!");
+                }
             });
         }
     }

@@ -76,27 +76,38 @@ function calculateAtkPairs(state: BoardState): number {
     return count;
 }
 
+/**
+ * Calculate number of pairs of queens NOT attacking each other, n, such that 0 <= n <= 28
+ */
 function countSafePairs(state: BoardState): number {
     return 28 - calculateAtkPairs(state);
 }
 
-var currentState: BoardState = generateRandomState();
 
+// ===========================================================================
+
+
+var currentState: BoardState = generateRandomState();
+let hc: HillClimb;
 jQuery(document).ready(() => {
     // Initialize chess board with randomly generated state
 
-    currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
+    // currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
+    currentState = generateRandomState();
     updateQueens(currentState.positions);
     console.log('STARTING AT: ' + currentState.positions);
+    hc = new HillClimb(getAllNeighbors, countSafePairs, currentState);
 });
 
 jQuery("#start-btn").click(function() {
-    let hc = new HillClimb(getAllNeighbors, countSafePairs, currentState);
-    while (!hc.isComplete) {
+    if (!hc.isComplete) {
         hc.step(1);
         updateQueens((<BoardState> hc.currentState).positions);
+        console.log('RESULT: ' + hc.currentState.positions);
     }
-    console.log('RESULT: ' + hc.currentState.positions);
+    else {
+        alert("Local maxima/minima found!");
+    }
 });
 // TEST STATE. SHOULD HAVE COST FUNCTION OF 17
 // positions = [4, 5, 6, 3, 4, 5, 6, 5];
