@@ -48,6 +48,7 @@ System.register(['./chessBoard.js', '../core_algorithms/js/hillClimb/hillClimb.j
         chessBoard_js_1.updateStepCount(0);
         console.log('STARTING AT: ' + currentState.positions);
         hc = new hillClimb_js_1.HillClimb(getAllNeighbors, countSafePairs, currentState);
+        chessBoard_js_1.enableExecBtns();
     }
     function getScore(state) {
         return calculateAtkPairs(state);
@@ -90,7 +91,7 @@ System.register(['./chessBoard.js', '../core_algorithms/js/hillClimb/hillClimb.j
                     console.log("RESULT: " + hc.currentState.positions);
                 }
                 else {
-                    alert("Local maxima/minima found!");
+                    chessBoard_js_1.disableExecBtns();
                 }
             });
             jQuery("#run-btn").click(function () {
@@ -99,6 +100,7 @@ System.register(['./chessBoard.js', '../core_algorithms/js/hillClimb/hillClimb.j
                     chessBoard_js_1.updateQueens(hc.currentState.positions, countSafePairs(hc.currentState));
                     chessBoard_js_1.updateStepCount(hc.stepCount);
                 }
+                chessBoard_js_1.disableExecBtns();
                 console.log("RESULT: " + hc.currentState.positions);
             });
             jQuery("#reset-btn").click(function () {

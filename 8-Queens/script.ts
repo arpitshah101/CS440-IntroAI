@@ -1,6 +1,6 @@
 /// <reference path="../typings/globals/jquery/index.d.ts" />
 
-import { clearBoard, updateQueens, updateStepCount } from './chessBoard.js';
+import { clearBoard, disableExecBtns, enableExecBtns, updateQueens, updateStepCount } from './chessBoard.js';
 
 import { HillClimb, NeighborsFunction, ValueFunction } from '../core_algorithms/js/hillClimb/hillClimb.js';
 
@@ -98,6 +98,7 @@ function resetVisualization() {
     updateStepCount(0);
     console.log('STARTING AT: ' + currentState.positions);
     hc = new HillClimb(getAllNeighbors, countSafePairs, currentState);
+    enableExecBtns();
 }
 
 jQuery(document).ready(() => {
@@ -112,7 +113,8 @@ jQuery("#step-btn").click(function() {
         console.log(`RESULT: ${(<BoardState>hc.currentState).positions}`);
     }
     else {
-        alert("Local maxima/minima found!");
+        disableExecBtns();
+        // alert("Local maxima/minima found!");
     }
 });
 
@@ -122,6 +124,7 @@ jQuery("#run-btn").click(function() {
         updateQueens((<BoardState> hc.currentState).positions, countSafePairs(hc.currentState));
         updateStepCount(hc.stepCount);
     }
+    disableExecBtns();
     console.log(`RESULT: ${(<BoardState>hc.currentState).positions}`);
 });
 
