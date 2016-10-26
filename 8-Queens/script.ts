@@ -89,15 +89,19 @@ function countSafePairs(state: BoardState): number {
 
 var currentState: BoardState = generateRandomState();
 let hc: HillClimb;
-jQuery(document).ready(() => {
-    // Initialize chess board with randomly generated state
 
-    currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
-    // currentState = generateRandomState();
+function resetVisualization() {
+    // Initialize chess board with randomly generated state
+    currentState = generateRandomState();
+    // currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
     updateQueens(currentState.positions, countSafePairs(currentState));
     updateStepCount(0);
     console.log('STARTING AT: ' + currentState.positions);
     hc = new HillClimb(getAllNeighbors, countSafePairs, currentState);
+}
+
+jQuery(document).ready(() => {
+    resetVisualization();
 });
 
 jQuery("#step-btn").click(function() {
@@ -119,6 +123,10 @@ jQuery("#run-btn").click(function() {
         updateStepCount(hc.stepCount);
     }
     console.log(`RESULT: ${(<BoardState>hc.currentState).positions}`);
+});
+
+jQuery("#reset-btn").click(function() {
+    resetVisualization();
 });
 // TEST STATE. SHOULD HAVE COST FUNCTION OF 17 pairs attacking or 11 pairs NOT attacking
 // positions = [4, 5, 6, 3, 4, 5, 6, 5];

@@ -42,6 +42,13 @@ System.register(['./chessBoard.js', '../core_algorithms/js/hillClimb/hillClimb.j
     function countSafePairs(state) {
         return 28 - calculateAtkPairs(state);
     }
+    function resetVisualization() {
+        currentState = generateRandomState();
+        chessBoard_js_1.updateQueens(currentState.positions, countSafePairs(currentState));
+        chessBoard_js_1.updateStepCount(0);
+        console.log('STARTING AT: ' + currentState.positions);
+        hc = new hillClimb_js_1.HillClimb(getAllNeighbors, countSafePairs, currentState);
+    }
     function getScore(state) {
         return calculateAtkPairs(state);
     }
@@ -73,11 +80,7 @@ System.register(['./chessBoard.js', '../core_algorithms/js/hillClimb/hillClimb.j
             }());
             currentState = generateRandomState();
             jQuery(document).ready(function () {
-                currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
-                chessBoard_js_1.updateQueens(currentState.positions, countSafePairs(currentState));
-                chessBoard_js_1.updateStepCount(0);
-                console.log('STARTING AT: ' + currentState.positions);
-                hc = new hillClimb_js_1.HillClimb(getAllNeighbors, countSafePairs, currentState);
+                resetVisualization();
             });
             jQuery("#step-btn").click(function () {
                 if (!hc.isComplete) {
@@ -97,6 +100,9 @@ System.register(['./chessBoard.js', '../core_algorithms/js/hillClimb/hillClimb.j
                     chessBoard_js_1.updateStepCount(hc.stepCount);
                 }
                 console.log("RESULT: " + hc.currentState.positions);
+            });
+            jQuery("#reset-btn").click(function () {
+                resetVisualization();
             });
         }
     }
