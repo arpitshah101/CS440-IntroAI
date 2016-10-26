@@ -79,4 +79,8 @@ export class HillClimb {
 		return this.complete;
 	}
 
+	get stepCount(): number {
+		return this.totalSteps;
+	}
+
 }

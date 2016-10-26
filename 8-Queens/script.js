@@ -73,20 +73,30 @@ System.register(['./chessBoard.js', '../core_algorithms/js/hillClimb/hillClimb.j
             }());
             currentState = generateRandomState();
             jQuery(document).ready(function () {
-                currentState = generateRandomState();
-                chessBoard_js_1.updateQueens(currentState.positions);
+                currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
+                chessBoard_js_1.updateQueens(currentState.positions, countSafePairs(currentState));
+                chessBoard_js_1.updateStepCount(0);
                 console.log('STARTING AT: ' + currentState.positions);
                 hc = new hillClimb_js_1.HillClimb(getAllNeighbors, countSafePairs, currentState);
             });
-            jQuery("#start-btn").click(function () {
+            jQuery("#step-btn").click(function () {
                 if (!hc.isComplete) {
                     hc.step(1);
-                    chessBoard_js_1.updateQueens(hc.currentState.positions);
-                    console.log('RESULT: ' + hc.currentState.positions);
+                    chessBoard_js_1.updateQueens(hc.currentState.positions, countSafePairs(hc.currentState));
+                    chessBoard_js_1.updateStepCount(hc.stepCount);
+                    console.log("RESULT: " + hc.currentState.positions);
                 }
                 else {
                     alert("Local maxima/minima found!");
                 }
+            });
+            jQuery("#run-btn").click(function () {
+                while (!hc.isComplete) {
+                    hc.step(1);
+                    chessBoard_js_1.updateQueens(hc.currentState.positions, countSafePairs(hc.currentState));
+                    chessBoard_js_1.updateStepCount(hc.stepCount);
+                }
+                console.log("RESULT: " + hc.currentState.positions);
             });
         }
     }

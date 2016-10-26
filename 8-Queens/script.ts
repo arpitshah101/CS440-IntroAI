@@ -1,6 +1,6 @@
 /// <reference path="../typings/globals/jquery/index.d.ts" />
 
-import { updateQueens, clearBoard } from './chessBoard.js';
+import { clearBoard, updateQueens, updateStepCount } from './chessBoard.js';
 
 import { HillClimb, NeighborsFunction, ValueFunction } from '../core_algorithms/js/hillClimb/hillClimb.js';
 
@@ -92,24 +92,35 @@ let hc: HillClimb;
 jQuery(document).ready(() => {
     // Initialize chess board with randomly generated state
 
-    // currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
-    currentState = generateRandomState();
-    updateQueens(currentState.positions);
+    currentState = new BoardState([4, 5, 6, 3, 4, 5, 6, 5]);
+    // currentState = generateRandomState();
+    updateQueens(currentState.positions, countSafePairs(currentState));
+    updateStepCount(0);
     console.log('STARTING AT: ' + currentState.positions);
     hc = new HillClimb(getAllNeighbors, countSafePairs, currentState);
 });
 
-jQuery("#start-btn").click(function() {
+jQuery("#step-btn").click(function() {
     if (!hc.isComplete) {
         hc.step(1);
-        updateQueens((<BoardState> hc.currentState).positions);
-        console.log('RESULT: ' + hc.currentState.positions);
+        updateQueens((<BoardState> hc.currentState).positions, countSafePairs(hc.currentState));
+        updateStepCount(hc.stepCount);
+        console.log(`RESULT: ${(<BoardState>hc.currentState).positions}`);
     }
     else {
         alert("Local maxima/minima found!");
     }
 });
-// TEST STATE. SHOULD HAVE COST FUNCTION OF 17
+
+jQuery("#run-btn").click(function() {
+    while (!hc.isComplete) {
+        hc.step(1);
+        updateQueens((<BoardState> hc.currentState).positions, countSafePairs(hc.currentState));
+        updateStepCount(hc.stepCount);
+    }
+    console.log(`RESULT: ${(<BoardState>hc.currentState).positions}`);
+});
+// TEST STATE. SHOULD HAVE COST FUNCTION OF 17 pairs attacking or 11 pairs NOT attacking
 // positions = [4, 5, 6, 3, 4, 5, 6, 5];
 
 function getScore(state: BoardState): number {

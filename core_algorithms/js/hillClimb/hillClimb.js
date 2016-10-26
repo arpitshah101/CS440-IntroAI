@@ -69,6 +69,13 @@ System.register([], function(exports_1, context_1) {
                     enumerable: true,
                     configurable: true
                 });
+                Object.defineProperty(HillClimb.prototype, "stepCount", {
+                    get: function () {
+                        return this.totalSteps;
+                    },
+                    enumerable: true,
+                    configurable: true
+                });
                 return HillClimb;
             }());
             exports_1("HillClimb", HillClimb);
