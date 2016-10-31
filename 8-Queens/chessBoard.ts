@@ -1,8 +1,5 @@
 /// <reference path="../typings/globals/jquery/index.d.ts" />
 
-
-
-
 export function clearBoard(): void {
     for (let i = 1; i < 9; i++) {
         jQuery('.col'+i).each((index: number, element: Element) => {
